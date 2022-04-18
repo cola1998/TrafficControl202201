@@ -1,0 +1,27 @@
+路网文件 net.net.xml 相关信息
+edge_length = 300
+numLanes = 3
+inEdges = ['gneE0','gneE1','gneE2','gneE3']
+outEdges = ['-gneE0','-gneE1','-gneE2','-gneE3']
+inLanes = ['gneE0_0','gneE0_1','gneE0_2',
+    'gneE1_0','gneE1_1','gneE1_2',
+    'gneE2_0','gneE2_1','gneE2_2',
+    'gneE3_0','gneE3_1','gneE3_2']
+outLanes = ['-gneE0_0','-gneE0_1','-gneE0_2',
+    '-gneE1_0','-gneE1_1','-gneE1_2',
+    '-gneE2_0','-gneE2_1','-gneE2_2',
+    '-gneE3_0','-gneE3_1','-gneE3_2']
+
+路网文件 net1.net.xml 相关信息
+edge_length = 300
+numLanes = 4
+inEdges = ['gneE0','gneE1','gneE2','gneE3']
+outEdges = ['-gneE0','-gneE1','-gneE2','-gneE3']
+inLanes = ['gneE0_0','gneE0_1','gneE0_2','gneE0_3',
+    'gneE1_0','gneE1_1','gneE1_2','gneE1_3',
+    'gneE2_0','gneE2_1','gneE2_2','gneE2_3',
+    'gneE3_0','gneE3_1','gneE3_2','gneE3_3']
+outLanes = ['-gneE0_0','-gneE0_1','-gneE0_2','-gneE0_3',
+    '-gneE1_0','-gneE1_1','-gneE1_2','-gneE1_3',
+    '-gneE2_0','-gneE2_1','-gneE2_2','-gneE2_3',
+    '-gneE3_0','-gneE3_1','-gneE3_2','-gneE3_3']

@@ -1,0 +1,29 @@
+rl_traffic_env_conf={
+    "List_state_feature":[
+        'cur_phase',
+        'vehicle_position_img',
+        'vehicle_speed_img',
+        'vehicle_waiting_time_img',
+        'lane_num_vehicle',
+        'lane_queue_length',
+        'lane_num_vehicle_left',
+        'lane_sum_waiting_time',
+        'done',
+        'coming_vehicle',
+        'leaving_vehicle',
+        'pressure',
+        'adjacency_martix'
+    ],
+    'List_reward_info':{
+        'sum_lane_queue_length':0,
+        'sum_lane_wait_time':0,
+        'sum_lane_num_vehicle_left':0,
+        'pressure':0
+    },
+    'Phase':[
+        'WES',
+        'WEL',
+        'NSS',
+        'NSL'
+    ]
+}
