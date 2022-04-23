@@ -75,12 +75,35 @@ class DQNAgent():
             # print("网络选取动作", a)
             return a  # 返回q值最大的那个
 
+    def select_action_biu(self, state,flag):
+        self.epsilon = max(self.epsilon * 0.9, 0.1)  # 约探索288轮
+
+        # 随机产生一个数据
+
+        if np.random.rand() <= self.epsilon:
+            if flag == 1:
+                a = random.randrange(self.out_dim//2)
+            else:
+                a = random.randrange(self.out_dim)
+            # print('1 a',a)
+            return a
+        else:
+            with torch.no_grad():
+                action = self.cri(state)  # 使用当前q网络计算四个动作对应的q值
+            if flag == 1:
+                for i in range(4, 8):
+                    action[i] = -np.inf
+            a = int(action.argmax(dim=1)[0])
+            # print("网络拟合数据", action)
+            # print("网络选取动作", a)
+            return a  # 返回q值最大的那个
+
     def take_action(self, current_action, max_step):  # 执行新动作
         # 返回当前动作执行后的waiting_time queue delay等等指标
         if current_action == 0 or current_action == 2:
-            n_step = 15
+            n_step = 30
         else:
-            n_step = 6
+            n_step = 5
         next_obs, r = self.sumoAgent.step(current_action, n_step)  # 传入动作和执行的步数
         if self.sumoAgent.get_current_time() < max_step:
             done = False
@@ -88,6 +111,18 @@ class DQNAgent():
             done = True
 
         return next_obs, r, done
+
+    def take_action_biu(self, current_action, max_step):  # 执行新动作
+        # 返回当前动作执行后的waiting_time queue delay等等指标
+        n_step = 30
+        next_obs, r = self.sumoAgent.step(current_action, n_step)  # 传入动作和执行的步数
+        if self.sumoAgent.get_current_time() < max_step:
+            done = False
+        else:
+            done = True
+
+        return next_obs, r, done
+
 
     def optimize_model(self):
         if self.replayBuffer.get_size() < self.replayBuffer.minibatch:

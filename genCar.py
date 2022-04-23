@@ -47,19 +47,19 @@ class GenCar:
         with open(self.fileName, 'w') as routes:
             print("""<routes>
             <vType id="standard_car" length="3.0" maxSpeed="15" minGap="1.0" accel="1.0" decel="4.0" />
-            <route id="N_S" edges="gneE5 gneE1 -gneE3 -gneE7"/>
-            <route id="N_E" edges="gneE5 gneE1 -gneE0 -gneE4 "/>
-            <route id="N_W" edges="gneE5 gneE1 -gneE2 -gneE6"/>
-            <route id="S_W" edges="gneE7 gneE3 -gneE2 -gneE6"/>
-            <route id="S_E" edges="gneE7 gneE3 -gneE0 -gneE4 "/>
-            <route id="S_N" edges="gneE7 gneE3 -gneE1 -gneE5 "/>
-
-            <route id="W_E" edges="gneE6 gneE2 -gneE0 -gneE4 "/>
-            <route id="W_N" edges="gneE6 gneE2 -gneE1 -gneE5 "/>
-            <route id="W_S" edges="gneE6 gneE2 -gneE3 -gneE7 "/>
-            <route id="E_N" edges="gneE4 gneE0 -gneE1 -gneE5 "/>
-            <route id="E_S" edges="gneE4 gneE0 -gneE3 -gneE7"/>
-            <route id="E_W" edges="gneE4 gneE0 -gneE2 -gneE6 "/>
+            <route id="N_S" edges="road_1_2_3 road_1_1_3"/>
+            <route id="N_E" edges="road_1_2_3 road_1_1_0"/>
+            <route id="N_W" edges="road_1_2_3 road_1_1_2"/>
+            <route id="S_W" edges="road_1_0_1 road_1_1_2"/>
+            <route id="S_E" edges="road_1_0_1 road_1_1_0"/>
+            <route id="S_N" edges="road_1_0_1 road_1_1_1"/>
+        
+            <route id="W_E" edges="road_0_1_0 road_1_1_0"/>
+            <route id="W_N" edges="road_0_1_0 road_1_1_1"/>
+            <route id="W_S" edges="road_0_1_0 road_1_1_3"/>
+            <route id="E_N" edges="road_2_1_2 road_1_1_1"/>
+            <route id="E_S" edges="road_2_1_2 road_1_1_3"/>
+            <route id="E_W" edges="road_2_1_2 road_1_1_2"/>
             """, file=routes)
             for car_counter, step in enumerate(car_gen_steps):
                 straight_or_turn = np.random.uniform()  # 生成一个01随机数、

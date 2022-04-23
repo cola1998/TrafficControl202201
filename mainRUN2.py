@@ -23,7 +23,7 @@ if 'SUMO_HOME' in os.environ:
 # 创建一个sumo agent
 # 奖励的权重
 c1, c2, c3 = 1, 0, 0
-sumofile = './sumoNet/net.sumocfg'
+sumofile = './sumoNet1/net.sumocfg'
 port = 5905
 inEdges = ['gneE1', 'gneE3', 'gneE0', 'gneE2']
 outEdges = ['-gneE1', '-gneE3', '-gneE0', '-gneE2']
@@ -61,7 +61,7 @@ total_step_list, total_per_reward_list, total_per_queue_list, total_per_delay_li
 
 
 # 创建一个车辆生成器
-totalNumber, maxSteps, leftTurn, straight, scale = 4000, MAX_STEPS, 4, 4, 1
+totalNumber, maxSteps, leftTurn, straight, scale = 2500, MAX_STEPS, 4, 4, 1
 # 生成50个数据集，以及对应的cfg文件
 for i in range(50):
     path = "./sumoNet1/"
@@ -137,7 +137,7 @@ for epoch in range(MAX_EPOCH):
         # speed 没有计算
 
         # 每轮都记录一次数据 避免某次出现错误丧失数据！
-        N = 101
+        N = 102
         fname = 'data_save/data_{0}.xlsx'.format(N)
         data_list = {'rewards': reward_list,
                      'delay_time': delay_list,
@@ -154,7 +154,7 @@ for epoch in range(MAX_EPOCH):
     total_per_delay_list.append(per_delay_list)
     total_per_travel_list.append(per_travel_list)
     total_step_list.append(steps_list)
-N = 101
+N = 102
 
 # 绘图
 IndSummaryPlot_S(N, total_per_reward_list, 'per_reward')
@@ -174,7 +174,7 @@ record_data_2(fname, data_list)
 
 # 然后使用该模型进行测试 test
 # 随机选取10个数据集
-test_size = 10
+test_size = 20
 choose = random.sample(l, test_size)
 # dqn 数据记录
 queue_list, delay_list, travel_list, reward_list = [], [], [], []
@@ -182,11 +182,11 @@ steps_list, per_reward_list, per_queue_list, per_delay_list, per_travel_list = [
 
 # ft 数据记录
 ft_queue_list, ft_delay_list, ft_travel_list = [], [], []
-ft_steps, ft_per_queue_list, ft_per_travel_list, ft_per_delay_list = [], [], []
+ft_steps, ft_per_queue_list, ft_per_travel_list, ft_per_delay_list = [], [], [], []
 
 # mp 数据记录
 mp_queue_list, mp_delay_list, mp_travel_list = [], [], []
-mp_steps, mp_per_queue_list, mp_per_delay_list, mp_per_travel_list = [], [], []
+mp_steps, mp_per_queue_list, mp_per_delay_list, mp_per_travel_list = [], [], [], []
 
 for c in range(len(choose)):
     sumofile = './sumoNet1/net{0}.sumocfg'.format(choose[c])

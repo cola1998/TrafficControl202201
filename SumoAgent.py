@@ -38,6 +38,10 @@ class SumoAgent:
         self.min_t = 10
         self.max_t = 50
 
+        self.car_length = 5.0
+        self.gap = 2.5
+        self.lane_length = 300
+
     # ----- connect -----
     def start_sumo(self):
         traci.start(self.sumoConfig)
@@ -60,6 +64,9 @@ class SumoAgent:
 
     def getPhase(self):
         return traci.trafficlight.getPhase(self.tlsID)
+
+    def getRemainStep(self):
+        return traci.trafficlight.get
 
     def update(self):
         self.time_since_last_phase_change += 1
@@ -114,9 +121,9 @@ class SumoAgent:
         return self.t
 
     def get_observation(self):
-        # phase 采用独热编码？？
-        p = [0 for i in range(4)]
-        p[self.getPhase() // 2] = 1
+        # phase 采用独热编码
+        p = [0 for i in range(8)]
+        p[(self.getPhase()-1) // 2] = 1
         # p = [self.getPhase()//2]
 
         # queue
@@ -124,6 +131,7 @@ class SumoAgent:
         # print(q)
 
         queue =list(q.values())
+        # density = list(self.get_density().values())
 
         # delay time
         delay = list(self.get_per_delay_time1())
@@ -142,13 +150,25 @@ class SumoAgent:
         for veh in veh_list:
             edge = traci.vehicle.getRoadID(veh)
             # print("edge ",edge)
-            if edge[0] != '-' and edge[0] != ':':
-                x = int(edge[4])
-                if x >= 4:  # 如果是后面的edge 那么减去4 否则不变
-                    edge = edge[:4] + str(x - 4) + edge[5:]
-                if traci.vehicle.getSpeed(veh) < 0.1:
-                   queue[edge] += 1
+            if edge in self.inEdges and traci.vehicle.getSpeed(veh) < 0.1:
+                queue[edge] += 1
         return queue
+
+
+    def get_density(self):
+        density = {edge: 0 for edge in self.inEdges}
+        n = {edge: 0 for edge in self.inEdges}
+        veh_list = self.get_running_cars()
+
+        for veh in veh_list:
+            edge = traci.vehicle.getRoadID(veh)
+            # print("edge ",edge)
+            if edge in self.inEdges and traci.vehicle.getSpeed(veh) < 0.1:
+                density[edge] += 1
+        for k,v in density.items():
+            density[k] = ((v * (self.car_length+self.gap)) / self.lane_length,3)
+        # print(density)
+        return density
 
     def get_queue_out(self):
         queue = {edge: 0 for edge in self.outEdges}
@@ -158,28 +178,24 @@ class SumoAgent:
         for veh in veh_list:
             edge = traci.vehicle.getRoadID(veh)
             # print("edge ",edge)
-            if edge[0] == '-' and edge[0] != ':':
-                x = int(edge[5])
-                if x >= 4:  # 如果是后面的edge 那么减去4 否则不变
-                    edge = edge[:5] + str(x - 4) + edge[6:]
-                if traci.vehicle.getSpeed(veh) < 0.1:
-                   queue[edge] += 1
+            if edge in self.outEdges and traci.vehicle.getSpeed(veh) < 0.1:
+                queue[edge] += 1
         return queue
 
-    def get_queue2(self):
-        queue = {}
-        for edge in self.inEdges:
-            cnt = 0
-            for vehicle in traci.edge.getLastStepVehicleIDs(edge):
-                if traci.vehicle.getSpeed(vehicle) < 0.1:
-                    cnt += 1
-            x = str(int(edge[4])+4)
-            lane2 = edge[:4]+x+edge[5:]
-            for vehicle in traci.edge.getLastStepVehicleIDs(lane2):
-                if traci.vehicle.getSpeed(vehicle) < 0.1:
-                    cnt += 1
-            queue[edge] = cnt
-        return queue
+    # def get_queue2(self):
+    #     queue = {}
+    #     for edge in self.inEdges:
+    #         cnt = 0
+    #         for vehicle in traci.edge.getLastStepVehicleIDs(edge):
+    #             if traci.vehicle.getSpeed(vehicle) < 0.1:
+    #                 cnt += 1
+    #         x = str(int(edge[4])+4)
+    #         lane2 = edge[:4]+x+edge[5:]
+    #         for vehicle in traci.edge.getLastStepVehicleIDs(lane2):
+    #             if traci.vehicle.getSpeed(vehicle) < 0.1:
+    #                 cnt += 1
+    #         queue[edge] = cnt
+    #     return queue
 
     def get_queue_n(self):
         n = 0
@@ -240,18 +256,14 @@ class SumoAgent:
 
     def get_delay_time1(self):
         # 延迟时间 = 自由行驶时间 - 实际行驶时间
-        delay = {edge:0 for edge in self.inEdges}
+        delay = {edge: 0 for edge in self.inEdges}
         veh_list = self.get_running_cars()
         free_speed = self.free_speed
         for veh in veh_list:
             edge = traci.vehicle.getRoadID(veh)
-            if edge[0] != '-' and edge[0] != ':':
-                x = int(edge[4])
-                if x >= 4:  # 如果是后面的edge 那么减去4 否则不变
-                    edge = edge[:4] + str(x-4) + edge[5:]
+            if edge in self.inEdges:
                 delay[edge] += self.get_v_delay_time(free_speed, veh)
         return delay
-
 
     def get_per_delay_time1(self):
         # 延迟时间 = 自由行驶时间 - 实际行驶时间 4维
@@ -261,10 +273,7 @@ class SumoAgent:
         free_speed = self.free_speed
         for veh in veh_list:
             edge = traci.vehicle.getRoadID(veh)
-            if edge[0] != '-' and edge[0] != ':':
-                x = int(edge[4])
-                if x >= 4:  # 如果是后面的edge 那么减去4 否则不变
-                    edge = edge[:4] + str(x - 4) + edge[5:]
+            if edge in self.inEdges:
                 delay[edge] += self.get_v_delay_time(free_speed, veh)
                 n[edge] += 1
         per_delay = []
@@ -274,7 +283,6 @@ class SumoAgent:
             else:
                 per_delay.append(0)
         return per_delay
-
 
     def get_per_waiting_time(self):
         total_waiting_time = 0
@@ -300,7 +308,7 @@ class SumoAgent:
 
         # reward = self.last_queue - queue + self.last_delay_time - per_delay_time
         reward = per_delay_time + per_travel_time
-        return -1*reward
+        return -1*round(reward/300,3)
 
     def normalization(self, x):
         nor_x = {}
@@ -308,17 +316,6 @@ class SumoAgent:
         for lane in self.inLanes:
             nor_x[lane] = round(x[lane] / min_x, 5)
         return nor_x
-
-    def pressMetric(self,k):
-        '''
-        state组成：p 当前阶段 动作WES,WEL,NSS,NSL 跟我们的相位方案一致
-        :param k: k = 3 车道分的段数
-        :return:
-        xm[k=0,1,2]出车道车辆数  xl[k= 0,1,2]入车道车辆数 x_max是车道上允许的最大车辆数
-        w(l,m) = xl/xl_max - xm/xm_max
-        pressure = w(l,m)[k=0,1,2] 之和 reward=-pressure
-        '''
-        pass
 
     def get_turn_number(self):
         turn_list = {edge: 0 for edge in self.inEdges}
@@ -329,11 +326,7 @@ class SumoAgent:
             edge = traci.vehicle.getRoadID(veh)
             # route = list(traci.vehicle.getRoute(veh))
             # next_edge = route[route.index(now_edge) + 1]
-            if edge[0] != '-' and edge[0] != ':':
-                x = int(edge[4])
-                if x >= 4:  # 如果是后面的edge 那么减去4 否则不变
-                    edge = edge[:4] + str(x - 4) + edge[5:]
-                # 左转
+            if edge in self.inEdges:
                 if veh[:3] == 'N_E' or veh[:3] == 'S_W' or veh[:3] == 'E_N' or veh[:3] == 'W_S':
                     turn_list[edge] += 1
 
