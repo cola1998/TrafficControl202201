@@ -48,7 +48,7 @@ class GenCar:
         # 生成汽车路径文件 每行一辆车
         with open(self.fileName, 'w') as routes:
             print("""<routes>
-    <vType id="standard_car" length="5.0" maxSpeed="11.11" minGap="2.5" accel="2.0" decel="4.5" />
+    <vType id="standard_car" length="5.0" maxSpeed="15" minGap="2.5" accel="2.0" decel="4.5" />
     <route id="N_S" edges="road_1_2_3 road_1_1_3"/>
     <route id="N_E" edges="road_1_2_3 road_1_1_0"/>
     <route id="N_W" edges="road_1_2_3 road_1_1_2"/>

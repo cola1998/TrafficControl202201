@@ -115,7 +115,7 @@ def IndSummaryPlot_S2(N, index, **kwargs):
         df[i]['algo'] = keys[i]
     print(df)
     df = pd.concat((df))
-    sns.lineplot(x='episode', y=index,hue='algo',style='algo',data=df)
+    sns.lineplot(x='episode', y=index, hue='algo', style='algo', data=df)
     plt.savefig('data_save/sns_{0}_{1}.png'.format(index, N))
     plt.show()
 
@@ -163,6 +163,11 @@ def boxPlot(title):
     plt.show()
 
 
+def read_excel(file):
+    data = pd.read_excel(file)
+    return data
+
+
 if __name__ == '__main__':
     # boxPlot('123')
     # IndSummaryPlot(10,'queue','delay','travel_time',ft=[[1,2,2,4],[1,2,2,4],[1,2,2,4]],dqn=[[1,3,2,2],[1,3,2,2],[1,3,2,2]],mp=[[1.5,3,1,4],[1.5,3,1,4],[1.5,3,1,4]])
@@ -172,5 +177,17 @@ if __name__ == '__main__':
     # data_list = {'reward': reward_list,
     #              'delay_time': delay_list,
     #              'queue': queue_list, }
-    # record_data_2('data_save/1.xlsx', data_list)
-    IndSummaryPlot_S2(1000,'queue',ft=[[1,2,2,4],[2,4,6,7],[0,2,9,9]],dqn=[[1,3,2,2],[1,3,2,2],[1,3,2,2]],mp=[[1.5,3,1,4],[1.5,3,1,4],[1.5,3,1,4]])
+    # # record_data_2('data_save/1.xlsx', data_list)
+    ft_data = pd.read_excel('data_save/ft_data_204.xlsx')
+    mp_data = pd.read_excel('data_save/mp_data_204.xlsx')
+    dqn_data = pd.read_excel('data_save/dqn_test_data_204.xlsx')
+    IndSummaryPlot_S2(204, 'test_per_delay_time', dqn=[list(dqn_data['per_delay_time'])],ft=[list(ft_data['ft_per_delay_time'])], mp=[list(mp_data['mp_per_delay_time'])])
+    # IndSummaryPlot_S2(201, 'per_queue', dqn=[list(dqn_data['per_queue'])],ft=[list(ft_data['ft_per_queue'])], mp=[list(mp_data['mp_per_queue'])])
+    IndSummaryPlot_S2(204, 'test_per_travel_time', dqn=[list(dqn_data['per_travel_time'])],ft=[list(ft_data['ft_per_travel_time'])], mp=[list(mp_data['mp_per_travel_time'])])
+    # IndSummaryPlot_S2(200, 'per_reward', dqn=[list(dqn_data['per_reward'])])
+
+    # data = pd.read_excel('data_save/data_202.xlsx')
+    # IndSummaryPlot_S2(202,'rewards',dqn=[list(data['rewards'])])
+    # IndSummaryPlot_S2(202, 'delay_time', dqn=[list(data['delay_time'])])
+    # IndSummaryPlot_S2(202, 'queue', dqn=[list(data['queue'])])
+    # # IndSummaryPlot_S2(105, 'travel_time', dqn=[list(data['travel_time'])])
